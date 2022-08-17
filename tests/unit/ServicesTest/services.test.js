@@ -105,3 +105,72 @@ describe("Busca um produto pelo ID", () => {
     });
   });
 });
+
+describe('Insere um novo filme no BD', () => {
+  describe('quando o nome nao é informado', () => {
+    const product = {};
+    before(async () => {
+      sinon.stub(productsModel, "createProducts").resolves(product);
+    });
+
+    after(async () => {
+      productsModel.createProducts.restore();
+    });
+
+    it("deve retornar message se o nome não for passado", async () => {
+      const response = await productsServices.createProducts();
+      expect(response).to.have.a.property("code");
+      expect(response).to.be.contain({ "message": '"name" is required'});
+    });
+
+  });
+
+  describe('quando o nome informado não é válido', () => {
+    const product = 'lua'
+    before(async () => {
+      sinon.stub(productsModel, "createProducts").resolves(product);
+    });
+
+    after(async () => {
+      productsModel.createProducts.restore();
+    });
+
+    it("deve retornar message", async () => {
+      const response = await productsServices.createProducts(product);
+      expect(response).to.have.a.property("code");
+      expect(response).to.be.contain({ "message": '"name" length must be at least 5 characters long' });
+    });
+
+  });
+
+
+  describe('quando é inserido com sucesso', () => {
+    const product = {
+      name: 'ProdutoY'
+    };
+
+    before(() => {
+      const ID_EXAMPLE = 3;
+
+      sinon.stub(productsModel, 'createProducts')
+        .resolves({ id: ID_EXAMPLE });
+    });
+
+    after(() => {
+      productsModel.createProducts.restore();
+    });
+
+    it('retorna um objeto', async () => {
+      const response = await productsServices.createProducts(product);
+
+      expect(response).to.be.a('object');
+    });
+
+    it('tal objeto possui o "id" do novo filme inserido', async () => {
+      const response = await productsServices.createProducts(product);
+
+      expect(response).to.have.a.property('id');
+    });
+
+  });
+});

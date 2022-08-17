@@ -54,18 +54,19 @@ describe("Busca todos os produtos", () => {
     });
   });
 
-describe("Filtra um produto pelo id", () => {
-  describe("Caso ERRO", async () => {
-    before(async () => {
-      const products = [[]];
-      sinon.stub(connection, "query").resolves(products);
-    });
+  describe("Filtra um produto pelo id", () => {
+    describe("Caso ERRO", async () => {
+      before(async () => {
+        const products = [[]];
+        sinon.stub(connection, "query").resolves(products);
+      });
       after(async () => {
-          connection.query.restore();
-    });
-        it("retorna null", async () => {
-          const response = await productsModel.getById(1);
-          expect(response).to.be.equal(null);
+        connection.query.restore();
+      });
+      it("retorna null", async () => {
+        const response = await productsModel.getById(1);
+        expect(response).to.be.equal(null);
+      });
     });
   });
 
@@ -90,6 +91,36 @@ describe("Filtra um produto pelo id", () => {
           expect(response).includes.all.keys("id", "name");
           expect(response).to.have.a.property("id");
         });
+    });
+});
+  
+  describe('Insere um novo produto', () => {
+  const product = {
+        name: 'ProdutoY'
+  };
+
+  before(async () => {
+    const query = [{ insertId: 3 }]; // retorno esperado nesse teste
+
+    sinon.stub(connection, 'query').resolves(query);
+  });
+
+  after(async () => {
+    connection.query.restore();
+  });
+
+  describe('Caso OK', async () => {
+
+    it('retorna um objeto', async () => {
+      const response = await productsModel.createProducts(product);
+
+      expect(response).to.be.a('object');
+    });
+
+    it('tal objeto possui o "id" do novo filme inserido', async () => {
+      const response = await productsModel.createProducts(product);
+
+      expect(response).to.have.a.property('id');
     });
   });
 });

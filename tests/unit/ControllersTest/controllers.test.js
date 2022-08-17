@@ -114,3 +114,92 @@ describe("Busca todos os produtos do controller'", () => {
     });
   });
 });
+
+describe('Ao chamar o controller de create', () => {
+    describe("quando o name não é informado", async () => {
+      const response = {};
+      const request = {};
+
+      before(() => {
+        request.body = {};
+
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon
+          .stub(productsServices, "createProducts")
+          .resolves({ code: 400, message: '"name" is required' });
+      });
+
+      after(() => {
+        productsServices.createProducts.restore();
+      });
+
+      it("é chamado o status com o código 400", async () => {
+        await productsController.createProducts(request, response);
+        expect(response.status.calledWith(400)).to.be.equal(true);
+      });
+    });
+
+
+    describe("quando o name é Inválido", async () => {
+      const response = {};
+      const request = {};
+
+      before(() => {
+        request.body = { name: "abc" };
+
+        response.status = sinon.stub().returns(response);
+        response.json = sinon.stub().returns();
+
+        sinon
+          .stub(productsServices, "createProducts")
+          .resolves({
+            code: 422,
+            message: '"name" length must be at least 5 characters long',
+          });
+      });
+
+      after(() => {
+        productsServices.createProducts.restore();
+      });
+
+      it("é chamado o status com o código 422", async () => {
+        await productsController.createProducts(request, response);
+        expect(response.status.calledWith(422)).to.be.equal(true);
+        expect(response.json.calledWith({ message: '"name" length must be at least 5 characters long',
+        })).to.be.equal(true);
+      });
+    });
+  });
+
+
+describe("quando é inserido com sucesso", async () => {
+  const response = {};
+  const request = {};
+  const newProduct = {
+    id: 1,
+    name: "ProductZ",
+  };
+
+  before(() => {
+    request.body = {
+      name: "ProductZ"
+    };
+
+    response.status = sinon.stub().returns(response);
+    response.json = sinon.stub().returns();
+
+    sinon.stub(productsServices, "createProducts").resolves(newProduct);
+  });
+
+  after(() => {
+    productsServices.createProducts.restore();
+  });
+
+  it("é chamado o status com o código 201", async () => {
+    await productsController.createProducts(request, response);
+
+    expect(response.status.calledWith(201)).to.be.equal(true);
+  });
+});
