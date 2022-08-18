@@ -52,10 +52,19 @@ async function updateProducts(id, name) {
   return product;
 }
 
+async function deleteProducts(id) {
+  const product = await productsModel.deleteProducts(id);
+  if (product === null) {
+    return { code: 404, message: ERROR_MESSAGE };
+  }
+  return {};
+}
+
 module.exports = {
   getAll,
   getById,
   createProducts,
   validatyName,
   updateProducts,
+  deleteProducts,
 }; 

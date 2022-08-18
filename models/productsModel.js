@@ -27,14 +27,26 @@ async function createProducts(name) {
 
 async function updateProducts(id, name) {
   const SQL = 'SELECT * FROM StoreManager.products WHERE id = ?';
-  const UPSQL = 'UPDATE StoreManager.products SET name = ? WHERE id = ?';
+  const UPDATE_SQL = 'UPDATE StoreManager.products SET name = ? WHERE id = ?';
 
   const [product] = await connection.query(SQL, [id]);
   if (!product || product.length === 0) {
     return null;
   }
-  await connection.query(UPSQL, [name, id]);
+  await connection.query(UPDATE_SQL, [name, id]);
   return { id, name };
+}
+
+async function deleteProducts(id) {
+  const SQL = 'SELECT * FROM StoreManager.products WHERE id = ?';
+  const DELETE_SQL = 'DELETE FROM StoreManager.products WHERE id = ?';
+
+  const [product] = await connection.query(SQL, [id]);
+  if (!product || product.length === 0) {
+    return null;
+  }
+  await connection.query(DELETE_SQL, [id]);
+  return {};
 }
 
 module.exports = {
@@ -42,4 +54,5 @@ module.exports = {
   getById,
   createProducts,
   updateProducts,
+  deleteProducts,
 }; 

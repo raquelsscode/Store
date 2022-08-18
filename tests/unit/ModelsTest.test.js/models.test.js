@@ -123,7 +123,7 @@ describe("Busca todos os produtos", () => {
       expect(response).to.have.a.property('id');
     });
   });
-  });
+});
 
 describe("Quando atualiza um producto pelo Id", () => {
   describe("quando o produto não existe", async () => {
