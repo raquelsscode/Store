@@ -174,3 +174,66 @@ describe('Insere um novo filme no BD', () => {
 
   });
 });
+
+describe("Atualiza um produto pelo ID", () => {
+  describe("quando o name não é valido", async () => {
+    it('CASO ERR', async () => {
+      const validName = await productsServices.updateProducts(1);
+      expect(validName).to.be.an("object");
+      expect(validName).to.have.a.property("code");
+      expect(validName.code).to.be.equal(400);
+    });
+    it("Quando o name não possui 5 ou mais caracteres", async () => {
+      const validName = await productsServices.updateProducts(1, 'lua');
+      expect(validName).to.be.an("object");
+      expect(validName).to.have.a.property("code");
+      expect(validName.code).to.be.equal(422);
+    });
+  });
+
+  describe("quando é pesquisado em caso de erro", async () => {
+    before(async () => {
+      sinon
+        .stub(productsModel, "updateProducts")
+        .resolves(null);
+    });
+
+    after(async () => {
+      productsModel.updateProducts.restore();
+    });
+
+    it("deve retornar null", async () => {
+      const response = await productsServices.updateProducts(1, 'ProductZ');
+      expect(response).to.have.a.property("code");
+      expect(response).to.have.a.property("message");
+      expect(response.code).to.be.equal(404);
+    });
+  });
+
+  describe("quando é atualizado com sucesso", async () => {
+    const id = 1;
+    const name = "Martelo de Thor";
+    const products = [
+      [
+        {
+          id: 1,
+          name: "Martelo de Thor",
+        },
+      ],
+    ];
+    before(async () => {
+      sinon.stub(productsModel, "updateProducts").resolves(products);
+    });
+
+    after(async () => {
+      productsModel.updateProducts.restore();
+    });
+
+    it("Retorna um objeto", async () => {
+      const response = await productsServices.updateProducts(id, name);
+      expect(response).to.be.an("array");
+      expect(response).to.not.be.empty;
+      expect(response[0][0].name).to.be.equal('Martelo de Thor');
+    });
+  });
+});

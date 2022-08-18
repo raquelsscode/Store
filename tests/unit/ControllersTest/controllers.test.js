@@ -171,7 +171,7 @@ describe('Ao chamar o controller de create', () => {
         })).to.be.equal(true);
       });
     });
-  });
+});
 
 
 describe("quando é inserido com sucesso", async () => {
@@ -201,5 +201,57 @@ describe("quando é inserido com sucesso", async () => {
     await productsController.createProducts(request, response);
 
     expect(response.status.calledWith(201)).to.be.equal(true);
+  });
+});
+
+describe("Ao chamar o controller de update", () => {
+  describe("quando o produto nao existe", async () => {
+    const req = {};
+    const res = {};
+    before(() => {
+      req.params = { id: 1 };
+      req.body = { name: "ProductZ" };
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      sinon
+        .stub(productsServices, "updateProducts")
+        .resolves({ code: 404, message: ERROR_MESSAGE });
+    });
+    after(() => {
+      productsServices.updateProducts.restore();
+    });
+
+    it("deve retornar null", async () => {
+      await productsController.updateProducts(req, res);
+      expect(res.status.calledWith(404)).to.be.equal(true);
+      expect(res.json.calledWith({ message: ERROR_MESSAGE })).to.be.equal(
+        true
+      );
+    });
+  });
+
+  describe("quando é atualizado com sucesso", async () => {
+    const products = {
+      id: 1,
+      name: "ProductZ",
+    };
+    const req = {};
+    const res = {};
+    before(() => {
+      req.params = { id: 1 };
+      req.body = { name: "ProductZ" };
+      res.status = sinon.stub().returns(res);
+      res.json = sinon.stub().returns();
+      sinon.stub(productsServices, "updateProducts").resolves(products);
+    });
+    after(() => {
+      productsServices.updateProducts.restore();
+    });
+
+    it("Retorna um produto atualizado", async () => {
+      await productsController.updateProducts(req, res);
+      expect(res.status.calledWith(200)).to.be.equal(true);
+      expect(res.json.calledWith(products)).to.be.equal(true);
+    });
   });
 });

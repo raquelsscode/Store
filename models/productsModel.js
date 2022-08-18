@@ -25,8 +25,21 @@ async function createProducts(name) {
   return { id: product.insertId, name };
 }
 
+async function updateProducts(id, name) {
+  const SQL = 'SELECT * FROM StoreManager.products WHERE id = ?';
+  const UPSQL = 'UPDATE StoreManager.products SET name = ? WHERE id = ?';
+
+  const [product] = await connection.query(SQL, [id]);
+  if (!product || product.length === 0) {
+    return null;
+  }
+  await connection.query(UPSQL, [name, id]);
+  return { id, name };
+}
+
 module.exports = {
   getAll,
   getById,
   createProducts,
+  updateProducts,
 }; 

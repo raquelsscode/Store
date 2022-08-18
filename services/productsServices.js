@@ -31,8 +31,31 @@ async function createProducts(name) {
   return product;
 }
 
+function validatyName(name) {
+  if (!name || name === undefined) return { code: 400, message: '"name" is required' };
+  if (name.length < 5) {
+    return {
+      code: 422,
+      message: '"name" length must be at least 5 characters long',
+    };
+  }
+  return true;
+}
+
+async function updateProducts(id, name) {
+  const validaty = validatyName(name);
+  if (validaty !== true) return validaty;
+  const product = await productsModel.updateProducts(id, name);
+  if (product === null) {
+    return { code: 404, message: ERROR_MESSAGE };
+  }
+  return product;
+}
+
 module.exports = {
   getAll,
   getById,
   createProducts,
+  validatyName,
+  updateProducts,
 }; 

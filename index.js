@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 app.get('/products', productsController.getAll);
 app.get('/products/:id', productsController.getById);
 app.post('/products', productsController.createProducts);
+app.put('/products/:id', productsController.updateProducts);
 
 app.listen(process.env.PORT, () => {
   console.log(`Escutando na porta ${process.env.PORT}`);

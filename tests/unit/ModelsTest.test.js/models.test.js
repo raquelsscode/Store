@@ -123,4 +123,50 @@ describe("Busca todos os produtos", () => {
       expect(response).to.have.a.property('id');
     });
   });
-});
+  });
+
+describe("Quando atualiza um producto pelo Id", () => {
+  describe("quando o produto não existe", async () => {
+    before(async () => {
+      const products = [[]];
+      sinon.stub(connection, "query").resolves(products);
+    });
+
+    after(async () => {
+      connection.query.restore();
+    });
+
+    it("deve retornar null", async () => {
+      const response = await productsModel.updateProducts(1, "ProductZ");
+      expect(response).to.be.equal(null);
+    });
+  });
+
+  describe("quando é pesquisado com sucesso", async () => {
+    const id = 1;
+    const name = 'Martelo de Thor';
+    const products = [
+      [
+        {
+          id: 1,
+          name: "Martelo de Thor",
+        },
+      ],
+    ];
+    before(async () => {
+      sinon.stub(connection, "query").resolves(products);
+    });
+
+    after(async () => {
+      connection.query.restore();
+    });
+
+    it("Retorna um objeto", async () => {
+      const response = await productsModel.updateProducts(id, name);
+      expect(response).to.be.a("object");
+      expect(response).to.not.be.empty;
+      expect(response).includes.all.keys("id", "name");
+      expect(response).to.have.a.property("id");
+    });
+  });
+}); 
