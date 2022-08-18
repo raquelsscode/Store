@@ -27,7 +27,6 @@ async function createProducts(name) {
   }
 
   const product = await productsModel.createProducts(name);
-
   return product;
 }
 
